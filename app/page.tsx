@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import HeroSection from "@/components/HeroSection";
 import CourseOverview from "@/components/CourseOverview";
 import Testimonials from "@/components/Testimonials";
+import WhyChoose from "@/components/WhyChoose";
 import TeachingMethod from "@/components/TeachingMethod";
 import Pricing from "@/components/Pricing";
 import AdditionalCourses from "@/components/AdditionalCourses";
@@ -80,6 +81,7 @@ export default function Home() {
       <HeroSection />
       <CourseOverview />
       <Testimonials />
+      <WhyChoose />
       <TeachingMethod />
       <Pricing />
       <AdditionalCourses />
