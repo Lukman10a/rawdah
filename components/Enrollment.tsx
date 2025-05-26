@@ -58,7 +58,7 @@ export default function Enrollment() {
           <div className="text-center space-y-6">
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href="https://bit.ly/rawdatulatfaal-form"
+                href="https://forms.gle/p8ay1URqvqbwiJt27"
                 target="_blank"
                 className="bg-white text-purple-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg"
               >
