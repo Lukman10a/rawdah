@@ -9,7 +9,6 @@ import Pricing from "@/components/Pricing";
 import AdditionalCourses from "@/components/AdditionalCourses";
 import Enrollment from "@/components/Enrollment";
 import Footer from "@/components/Footer";
-import logo from "@/public/assets/rawdah_logo.jpg";
 
 export default function Home() {
   useEffect(() => {
