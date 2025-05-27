@@ -171,9 +171,13 @@ export default function HeroSection() {
         </div>
 
         <div className="text-center mt-12">
-          <p className="text-gray-600 mb-4">
+          <p className="">
             <strong>Important:</strong> All payments must be made upfront
             (either in full or monthly basis)
+          </p>
+          <p className="mb-3">
+            <strong>Note:</strong> Nigerians should pay the equivalent in Naira,
+            not USD
           </p>
           <div className="bg-white p-6 rounded-xl shadow-lg inline-block">
             <h4 className="font-semibold text-black text-3xl mb-2">

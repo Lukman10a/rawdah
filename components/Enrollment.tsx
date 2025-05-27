@@ -11,7 +11,7 @@ export default function Enrollment() {
           </h2>
           <p className="text-xl opacity-90 max-w-3xl mx-auto">
             Join 100+ students who have transformed either their Quranic
-            recitation and memorization, Arabic kanguage and Islamic knowledge
+            recitation and memorization, Arabic language and Islamic knowledge
             through our courses
           </p>
         </div>
