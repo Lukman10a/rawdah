@@ -2,15 +2,11 @@
 
 import { useEffect } from "react";
 import Navigation from "@/components/Navigation";
-import HeroSection from "@/components/HeroSection";
-import CourseOverview from "@/components/CourseOverview";
-import Testimonials from "@/components/Testimonials";
-import WhyChoose from "@/components/WhyChoose";
-import TeachingMethod from "@/components/TeachingMethod";
-import AdditionalCourses from "@/components/AdditionalCourses";
+import Pricing from "@/components/Pricing";
+import Enrollment from "@/components/Enrollment";
 import Footer from "@/components/Footer";
 
-export default function Home() {
+export default function PricingPage() {
   useEffect(() => {
     // Smooth scrolling for anchor links
     const anchors = document.querySelectorAll('a[href^="#"]');
@@ -78,13 +74,11 @@ export default function Home() {
   return (
     <main>
       <Navigation />
-      <HeroSection />
-      <CourseOverview />
-      <Testimonials />
-      <WhyChoose />
-      <TeachingMethod />
-      <AdditionalCourses />
+      <div className="pt-20">
+        <Pricing />
+        <Enrollment />
+      </div>
       <Footer />
     </main>
   );
-}
+} 

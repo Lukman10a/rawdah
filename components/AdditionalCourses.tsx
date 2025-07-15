@@ -37,8 +37,8 @@ export default function AdditionalCourses() {
           <p className="text-gray-600 mb-6">
             <strong>Special Note:</strong> Limited slots available for adults across all our programs
           </p>
-          <a href="https://wa.link/2fgoky" target="_blank" className="inline-block bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-full font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105">
-            Inquire About Other Courses
+          <a href="https://www.markazulbayaan.com.ng/newCourse" target="_blank" rel="noopener noreferrer" className="inline-block bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-full font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105">
+            🌟 Explore All Courses
           </a>
         </div>
       </div>
