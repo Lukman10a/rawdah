@@ -3,8 +3,8 @@
 > Any agent must execute in order, updating status. Verify after each phase.
 > Status legend: ✅ Done | ⏳ Pending | 🔜 Future — updated 2026-04-28
 
-## P1 — StickyNav Left Drawer — ✅ Done (2026-04-28)
-- **File:** `components/sections/StickyNav.tsx:40-45` top conditional dropdown → `fixed left-0 top-0 h-[100dvh] w-[84%] max-w-[340px]` drawer + overlay `fixed inset-0 bg-forest/25 backdrop-blur-sm`.
+## P1 — StickyNav Right Drawer (hamburger right) — ✅ Done (2026-04-28, updated 2026-04-28 right side)
+- **File:** `components/sections/StickyNav.tsx:40-45` → `fixed right-0 top-0 h-[100dvh] w-[84%] max-w-[340px] translate-x-0 ↔ translate-x-full` (right slide, hamburger on right `justify-between` header), overlay `fixed inset-0 bg-forest/25 backdrop-blur-sm`.
 - **Animation:** `translate-x-0 ↔ -translate-x-full` + `transition-transform duration-300 ease-out`, body `overflow-hidden` while open, `Escape`/overlay click closes, hamburger spans animate to `✕`, `aria-expanded`, focus-trap first link.
 - **Verify:** 375px drawer slides from left (not top) — confirmed working, no horizontal scroll.
 

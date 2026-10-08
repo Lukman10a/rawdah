@@ -69,11 +69,11 @@ export default function StickyNav() {
         onClick={() => setOpen(false)}
         className={`lg:hidden fixed inset-0 z-40 bg-forest/25 backdrop-blur-[2px] transition-opacity duration-300 ${open ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
       />
-      {/* Drawer from left */}
+      {/* Drawer from right — hamburger on right */}
       <div
         role="dialog"
         aria-modal={open}
-        className={`lg:hidden fixed left-0 top-0 z-50 h-[100dvh] w-[84%] max-w-[340px] bg-white border-r border-sage shadow-softLg flex flex-col transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform ${open ? 'translate-x-0' : '-translate-x-full'}`}
+        className={`lg:hidden fixed right-0 top-0 z-50 h-[100dvh] w-[84%] max-w-[340px] bg-white border-l border-sage shadow-softLg flex flex-col transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] will-change-transform ${open ? 'translate-x-0' : 'translate-x-full'}`}
       >
         <div className="h-[64px] flex items-center justify-between px-4 border-b border-sage shrink-0">
           <span className="flex items-center gap-2 font-semibold text-forest"><span className="w-7 h-7 rounded-full bg-forest text-white grid place-items-center text-[10px]">MB</span> Menu</span>
