@@ -7,6 +7,7 @@ You only do steps 1–4 once. Total ~10 minutes, no coding beyond copy-paste.
 ---
 
 ## What you will get
+
 - **Sheet:** `Rawdah Registrations` — one row per parent, visible only to you
 - **Form:** same inline form, `NEXT_PUBLIC_GOOGLE_SHEETS_URL` → posts `text/plain` JSON
 - **Parent email:** `MailApp.sendEmail` from your Gmail (your account quota, ~100/day free, sends as you) with payment instructions
@@ -37,9 +38,9 @@ You only do steps 1–4 once. Total ~10 minutes, no coding beyond copy-paste.
 
 ```js
 // 1) CONFIG — change only these two lines
-const SHEET_ID = 'PASTE_SHEET_ID_HERE'; // from Step 1 (the long ID in your Sheet URL)
-const SHEET_NAME = 'Sheet1';            // exact tab name at bottom of Sheet (case-sensitive)
-const ADMIN_EMAIL = 'markazulbayaan9@gmail.com'; // optional admin copy
+const SHEET_ID = "PASTE_SHEET_ID_HERE"; // from Step 1 (the long ID in your Sheet URL)
+const SHEET_NAME = "Sheet1"; // exact tab name at bottom of Sheet (case-sensitive)
+const ADMIN_EMAIL = "markazulbayaan9@gmail.com"; // optional admin copy
 
 function doPost(e) {
   try {
@@ -50,23 +51,43 @@ function doPost(e) {
     const ss = SpreadsheetApp.openById(SHEET_ID);
     let sh = ss.getSheetByName(SHEET_NAME);
     if (!sh) {
-      const available = ss.getSheets().map(s => s.getName()).join(', ');
-      throw new Error("Sheet not found: '" + SHEET_NAME + "'. Available tabs: " + available + ". Fix SHEET_NAME to match exactly.");
+      const available = ss
+        .getSheets()
+        .map((s) => s.getName())
+        .join(", ");
+      throw new Error(
+        "Sheet not found: '" +
+          SHEET_NAME +
+          "'. Available tabs: " +
+          available +
+          ". Fix SHEET_NAME to match exactly.",
+      );
     }
     // UK time (GMT/BST) — Europe/London handles GMT in winter, BST in summer
-    const ukTimestamp = Utilities.formatDate(new Date(), 'Europe/London', 'yyyy-MM-dd HH:mm:ss') + ' (UK)';
+    const ukTimestamp =
+      Utilities.formatDate(new Date(), "Europe/London", "yyyy-MM-dd HH:mm:ss") +
+      " (UK)";
     sh.appendRow([
       ukTimestamp,
-      data.parentName, data.studentName, data.studentAge, data.country,
-      data.email, data.whatsapp, data.level, data.preferredTime, data.plan,
-      data.notes || '', data.source || ''
+      data.parentName,
+      data.studentName,
+      data.studentAge,
+      data.country,
+      data.email,
+      data.whatsapp,
+      data.level,
+      data.preferredTime,
+      data.plan,
+      data.notes || "",
+      data.source || "",
     ]);
 
     // 3) Keep parent auto-message (sent from YOUR Gmail)
     try {
-      const planLabel = data.plan === 'full'
-        ? 'Full Payment — $500 (Save $25)'
-        : 'Monthly — $105 / month ×5';
+      const planLabel =
+        data.plan === "full"
+          ? "Full Payment — $500 (Save $25)"
+          : "Monthly — $105 / month ×5";
       MailApp.sendEmail({
         to: data.email,
         subject: "Registration received — here's what to do next",
@@ -84,11 +105,13 @@ function doPost(e) {
               </ol>
             </div>
             <p style="font-size:12px;color:#17211E;opacity:0.6">juzamma.rawdahkids.org • +234 808 928 7065</p>
-          </div>`
+          </div>`,
       });
       // Optional: notify yourself (uncomment next 3 lines if you want admin email too)
       // MailApp.sendEmail({ to: ADMIN_EMAIL, subject: `New Registration — ${data.studentName}`, htmlBody: `<pre>${JSON.stringify(data, null, 2)}</pre>` });
-    } catch (err) { console.log('parent mail failed', err); }
+    } catch (err) {
+      console.log("parent mail failed", err);
+    }
 
     return json({ ok: true });
   } catch (err) {
@@ -96,8 +119,14 @@ function doPost(e) {
   }
 }
 
-function doGet() { return json({ ok: true, message: 'Use POST from the funnel form' }); }
-function json(o){ return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
+function doGet() {
+  return json({ ok: true, message: "Use POST from the funnel form" });
+}
+function json(o) {
+  return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(
+    ContentService.MimeType.JSON,
+  );
+}
 ```
 
 3. Replace `PASTE_SHEET_ID_HERE` with your ID, verify `SHEET_NAME` matches tab name.
@@ -125,18 +154,21 @@ function json(o){ return ContentService.createTextOutput(JSON.stringify(o)).setM
 
 **Local test:**
 `.env.local` (add one of these — proxy checks both, prefers server key):
+
 ```
 GOOGLE_SHEETS_URL=https://script.google.com/macros/s/AKfycbydWnUFX9NPOLS_RMxJdtqs-YWO7NeVotIjH2qZG8EMH6QhJHL8GBGs0srAk56uKyFuhA/exec
 # fallback also works:
 NEXT_PUBLIC_GOOGLE_SHEETS_URL=https://script.google.com/macros/s/AKfycbydWnUFX9NPOLS_RMxJdtqs-YWO7NeVotIjH2qZG8EMH6QhJHL8GBGs0srAk56uKyFuhA/exec
 ```
+
 Run `npm run dev` → submit test → check Sheet row + parent inbox (check spam, sender is your Gmail).
 
 **Production (Vercel):**
 Vercel → Project → **Settings → Environment Variables** → Add:
+
 - Key: `GOOGLE_SHEETS_URL` (or `NEXT_PUBLIC_GOOGLE_SHEETS_URL`)
 - Value: `https://script.google.com/macros/s/AKfycbydWnUFX9NPOLS_RMxJdtqs-YWO7NeVotIjH2qZG8EMH6QhJHL8GBGs0srAk56uKyFuhA/exec`
-→ **Save → Redeploy** (Deployments → Redeploy) — **required** because your current deploy has old env and returns 401 until redeployed with correct `Anyone` deployment (Step 3) and this env.
+  → **Save → Redeploy** (Deployments → Redeploy) — **required** because your current deploy has old env and returns 401 until redeployed with correct `Anyone` deployment (Step 3) and this env.
 
 Code posts `POST /api/enroll` (`components/sections/EnrollmentForm.tsx:14`); server proxies `text/plain` to Apps Script and returns `{ok:true}` → success pane `Registration received — here's what to do next`.
 
