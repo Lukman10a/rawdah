@@ -52,12 +52,12 @@ Attention → Understanding → Trust → Desire → Proof → Price → Objecti
 
 ## 7. Current Decisions Log (2026-04-28)
 - No images yet: keep `Hero.tsx:87-117` CSS open-book placeholder, no `public/assets/hero-*` until approved faceless image (back-of-head/hands on mushaf + laptop, no faces).
-- Subdomain: `juzamma.rawdahkids.org`, Vercel Git-connected, DNS at Namecheap, `FROM_EMAIL Markazul Bayaan <noreply@juzamma.rawdahkids.org>` (fallback `onboarding@resend.dev` until verified), apex `rawdahkids.org` stays separate.
-- Form provider: Resend dual-email (admin + parent auto-reply), single dep `resend`.
-- Mobile UX: left drawer, carousel 5s auto + swipe + equal height.
+- Subdomain: `juzamma.rawdahkids.org`, Vercel Git-connected, DNS at Namecheap, apex `rawdahkids.org` stays separate.
+- Form provider: **Google Sheets + Apps Script webhook (A)** inbound — `NEXT_PUBLIC_GOOGLE_SHEETS_URL` → Sheet `Rawdah Registrations` owned by your Google account email; parent auto-message kept via Apps Script `MailApp.sendEmail` + success pane `Registration received — here's what to do next` (see `docs/GOOGLE_SHEETS_SETUP.md`). No Resend/outbound service.
+- Mobile UX: left drawer (left slide, not top), carousel 5s auto + swipe + equal height `min-h-[300px]`.
 
 ## 8. Technical Stack
-Next.js 14.0.3, React 18, Tailwind 3.3, `next/font` Plus_Jakarta_Sans + Amiri, `react-icons 5.5`. Build: `npm run build` → `11.5 kB / 95.4 kB`. No heavy carousel/email deps beyond `resend`.
+Next.js 14.0.3, React 18, Tailwind 3.3, `next/font` Plus_Jakarta_Sans + Amiri, `react-icons 5.5`. Build: `npm run build` → `12.4 kB / 96.3 kB`. No heavy carousel/email deps; no `resend`.
 
 ## 9. File Map
-`app/layout.tsx`, `app/globals.css`, `app/page.tsx`, `tailwind.config.js`, `components/ui/Section.tsx`, `components/sections/{StickyNav,MobileStickyCTA,Hero,TrustStrip,Timeline,Achievements,Snapshot,WhyOneOnOne,WhyBayaan,TeachingMethod,Testimonials,Pricing,EnrollmentForm,FAQ,AdditionalCourses,FinalCTA,Footer}.tsx`, `app/api/enroll/route.ts`, `docs/{SPEC,PHASES,GUARDRAILS}.md`.
+`app/layout.tsx`, `app/globals.css`, `app/page.tsx`, `tailwind.config.js`, `components/ui/Section.tsx`, `components/sections/{StickyNav,MobileStickyCTA,Hero,TrustStrip,Timeline,Achievements,Snapshot,WhyOneOnOne,WhyBayaan,TeachingMethod,Testimonials,Pricing,EnrollmentForm,FAQ,AdditionalCourses,FinalCTA,Footer}.tsx`, `docs/{SPEC,PHASES,GUARDRAILS,GOOGLE_SHEETS_SETUP}.md`, `.env.example` (`NEXT_PUBLIC_GOOGLE_SHEETS_URL`).
