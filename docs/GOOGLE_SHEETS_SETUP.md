@@ -37,20 +37,26 @@ You only do steps 1–4 once. Total ~10 minutes, no coding beyond copy-paste.
 
 ```js
 // 1) CONFIG — change only these two lines
-const SHEET_ID = 'PASTE_SHEET_ID_HERE'; // from Step 1
-const SHEET_NAME = 'Sheet1';            // tab name at bottom (default Sheet1)
+const SHEET_ID = 'PASTE_SHEET_ID_HERE'; // from Step 1 (the long ID in your Sheet URL)
+const SHEET_NAME = 'Sheet1';            // exact tab name at bottom of Sheet (case-sensitive)
 const ADMIN_EMAIL = 'markazulbayaan9@gmail.com'; // optional admin copy
 
 function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
-    // Honeypot — bots fill hidden "company" field
-    if (data.company) return json({ ok: true });
+    if (data.company) return json({ ok: true }); // honeypot
 
-    // 2) Append row
-    const sh = SpreadsheetApp.openById(SHEET_ID).getSheetByName(SHEET_NAME);
+    // 2) Open sheet — robust to wrong name (fixes "Cannot read properties of null (reading 'appendRow')")
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    let sh = ss.getSheetByName(SHEET_NAME);
+    if (!sh) {
+      const available = ss.getSheets().map(s => s.getName()).join(', ');
+      throw new Error("Sheet not found: '" + SHEET_NAME + "'. Available tabs: " + available + ". Fix SHEET_NAME to match exactly.");
+    }
+    // UK time (GMT/BST) — Europe/London handles GMT in winter, BST in summer
+    const ukTimestamp = Utilities.formatDate(new Date(), 'Europe/London', 'yyyy-MM-dd HH:mm:ss') + ' (UK)';
     sh.appendRow([
-      data.timestamp || new Date().toISOString(),
+      ukTimestamp,
       data.parentName, data.studentName, data.studentAge, data.country,
       data.email, data.whatsapp, data.level, data.preferredTime, data.plan,
       data.notes || '', data.source || ''
@@ -113,22 +119,26 @@ function json(o){ return ContentService.createTextOutput(JSON.stringify(o)).setM
 
 ---
 
-## Step 4 — Connect the Funnel (1 min)
+## Step 4 — Connect the Funnel (1 min) — Now via Server Proxy (fixes CORS/401)
+
+**Fix applied:** Funnel now posts same-origin `POST /api/enroll` → server `app/api/enroll/route.ts` forwards to Google (`text/plain`) — browser never contacts `script.google.com` directly, so no CORS. Your URL `AKfycbydWnUFX9NPOLS_RMxJdtqs-YWO7NeVotIjH2qZG8EMH6QhJHL8GBGs0srAk56uKyFuhA` stays server-side.
 
 **Local test:**
-Create `.env.local` in project root (same folder as `package.json`):
+`.env.local` (add one of these — proxy checks both, prefers server key):
 ```
-NEXT_PUBLIC_GOOGLE_SHEETS_URL=https://script.google.com/macros/s/XXXX/exec
+GOOGLE_SHEETS_URL=https://script.google.com/macros/s/AKfycbydWnUFX9NPOLS_RMxJdtqs-YWO7NeVotIjH2qZG8EMH6QhJHL8GBGs0srAk56uKyFuhA/exec
+# fallback also works:
+NEXT_PUBLIC_GOOGLE_SHEETS_URL=https://script.google.com/macros/s/AKfycbydWnUFX9NPOLS_RMxJdtqs-YWO7NeVotIjH2qZG8EMH6QhJHL8GBGs0srAk56uKyFuhA/exec
 ```
 Run `npm run dev` → submit test → check Sheet row + parent inbox (check spam, sender is your Gmail).
 
 **Production (Vercel):**
 Vercel → Project → **Settings → Environment Variables** → Add:
-- Key: `NEXT_PUBLIC_GOOGLE_SHEETS_URL`
-- Value: `https://script.google.com/macros/s/XXXX/exec`
-→ **Save → Redeploy** (Deployments → Redeploy)
+- Key: `GOOGLE_SHEETS_URL` (or `NEXT_PUBLIC_GOOGLE_SHEETS_URL`)
+- Value: `https://script.google.com/macros/s/AKfycbydWnUFX9NPOLS_RMxJdtqs-YWO7NeVotIjH2qZG8EMH6QhJHL8GBGs0srAk56uKyFuhA/exec`
+→ **Save → Redeploy** (Deployments → Redeploy) — **required** because your current deploy has old env and returns 401 until redeployed with correct `Anyone` deployment (Step 3) and this env.
 
-Code already posts `text/plain` JSON from `components/sections/EnrollmentForm.tsx:4`; on success it shows `Registration received — here's what to do next` with plan-aware GTBank box. If URL not yet set, it logs locally and still shows success (so funnel never blocks).
+Code posts `POST /api/enroll` (`components/sections/EnrollmentForm.tsx:14`); server proxies `text/plain` to Apps Script and returns `{ok:true}` → success pane `Registration received — here's what to do next`.
 
 ---
 
@@ -143,9 +153,9 @@ Code already posts `text/plain` JSON from `components/sections/EnrollmentForm.ts
 
 ## Troubleshooting
 
-- **No row?** Check Sheet ID/name, deployment is `Anyone`, and redeployed after script change.
-- **CORS error in browser but row still appears?** Apps Script `text/plain` should avoid CORS; if seen, ensure `Who has access: Anyone` and URL is `.../exec` not `.../dev`.
+- **401 / CORS from `script.google.com`?** You deployed with wrong access — redeploy Step 3 as `Who has access: Anyone` (not Anyone with Google account) → New version. Also ensure Vercel env `GOOGLE_SHEETS_URL` is set and redeployed; direct browser fetch is now avoided via `/api/enroll` proxy.
+- **No row?** Check Sheet ID/name, deployment is `Anyone` with new version, and Vercel redeployed after env change.
 - **Parent email not received?** Check script **Executions** log, Gmail daily limit (~100/day free), and spam folder. Admin copy is commented — uncomment if you want duplicate to `markazulbayaan9@gmail.com`.
-- **Resend?** Removed — deleted `app/api/enroll/route.ts`, `resend` dep, `RESEND_API_KEY` env (see `docs/SPEC.md:7`).
+- **Resend?** Removed — now `app/api/enroll/route.ts` is a Sheets proxy (not Resend), `resend` dep removed.
 
 Need help? Paste your Web App URL here and I’ll set `.env.example` / Vercel instructions for you — no push to repo without permission per `docs/GUARDRAILS.md:7`.
