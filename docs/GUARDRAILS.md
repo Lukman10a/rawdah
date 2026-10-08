@@ -32,3 +32,8 @@
 
 ## 6. Non-Goals
 - No flashy SaaS/crypto styling, no childish Quran site, no generic Islamic template, no gold overload.
+
+## 7. Repository Access
+- No `git push`, `git push origin`, `gh` or any remote write may be performed without your explicit “push” / “allow push” permission in that turn.
+- Assistant has no standing access to `https://github.com/Lukman10a/rawdah.git` — changes remain local (`git diff` / `git status` preview) until you authorize push.
+- Local `git commit` for checkpointing is allowed; remote sync requires outright permission. This overrides any prior auto-push behavior.
