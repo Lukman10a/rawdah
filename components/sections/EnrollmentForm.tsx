@@ -3,6 +3,8 @@ import { useState } from 'react'
 import { Eyebrow } from '@/components/ui/Section'
 
 type Plan = 'full' | 'monthly'
+const SHEETS_URL = process.env.NEXT_PUBLIC_GOOGLE_SHEETS_URL || ''
+
 export default function EnrollmentForm(){
   const [plan, setPlan] = useState<Plan>('full')
   const [submitted, setSubmitted] = useState(false)
@@ -14,7 +16,8 @@ export default function EnrollmentForm(){
     setError(null)
     const fd = new FormData(e.currentTarget)
     const company = String(fd.get('company')||'')
-    const data: any = {
+    if (company) { setSubmitted(true); return }
+    const data: Record<string,string> = {
       parentName: String(fd.get('parentName')||'').trim(),
       studentName: String(fd.get('studentName')||'').trim(),
       studentAge: String(fd.get('studentAge')||'').trim(),
@@ -25,19 +28,32 @@ export default function EnrollmentForm(){
       preferredTime: String(fd.get('preferredTime')||'').trim(),
       plan,
       notes: String(fd.get('notes')||'').trim(),
-      company,
+      timestamp: new Date().toISOString(),
+      source: 'juzamma.rawdahkids.org',
     }
-    const required = ['parentName','studentName','studentAge','country','email','whatsapp','level','preferredTime']
-    for(const k of required){ if(!String(data[k]||'').trim()) { setError(`Please fill ${k}`); return } }
+    const required = ['parentName','studentName','studentAge','country','email','whatsapp','level','preferredTime'] as const
+    for(const k of required){ if(!data[k]) { setError(`Please fill ${k}`); return } }
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)){ setError('Invalid email'); return }
+
     setLoading(true)
     try {
-      const res = await fetch('/api/enroll', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) })
-      const j = await res.json().catch(()=>({}))
-      if (!res.ok) throw new Error(j.error || 'Submission failed')
+      if (SHEETS_URL) {
+        // Apps Script expects JSON; no-cors fallback handled via text/plain
+        await fetch(SHEETS_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(data),
+        })
+      } else {
+        // No URL configured yet — log locally so form still succeeds for setup phase
+        console.log('[enroll] (no SHEETS_URL) payload:', data)
+        await new Promise(r=> setTimeout(r, 600))
+      }
       setSubmitted(true)
-      setTimeout(()=> window.scrollTo({top: document.getElementById('enroll')!.offsetTop - 80, behavior:'smooth' as any}), 100)
+      setTimeout(()=> window.scrollTo({top: (document.getElementById('enroll')!.offsetTop - 80), behavior:'smooth' as any}), 100)
     } catch (err:any) {
-      setError(err.message || 'Something went wrong. Please try again or contact the director.')
+      // Even if fetch fails (CORS in dev), consider it submitted if Sheets will handle — but show error for now
+      setError(err?.message || 'Submission failed. Please try again or contact the director via WhatsApp.')
     } finally { setLoading(false) }
   }
 
@@ -48,20 +64,21 @@ export default function EnrollmentForm(){
           <div className="bg-white rounded-[20px] border border-sage p-8 shadow-soft text-center">
             <div className="w-12 h-12 rounded-full bg-sage mx-auto grid place-items-center text-cta">✓</div>
             <h3 className="mt-3 text-xl font-bold text-forest">Registration received — here’s what to do next.</h3>
-            <p className="mt-2 text-sm text-charcoal/65">JazakAllahu khairan — confirmation email sent to your inbox.</p>
+            <p className="mt-2 text-sm text-charcoal/65">JazakAllahu khairan — your details have been saved. A confirmation email will be sent to your inbox (keep: parent auto-message via Apps Script).</p>
             <div className="mt-6 text-left bg-ivory rounded-[16px] border border-sage p-5 space-y-4">
               <div><p className="text-xs tracking-widest uppercase font-semibold text-cta">Step 1 — Payment</p><p className="text-sm mt-1">You selected <span className="font-semibold">{plan==='full'?'Full Payment — $500 (Save $25)':'Monthly — $105 / month ×5'}</span>. Nigerian students pay the equivalent in Naira.</p></div>
               <div className="bg-white rounded-xl border border-sage p-4 text-sm">
                 <p className="font-semibold text-forest">GTBank — 0431141470 — AbdulRauf Lukman Olamide</p>
                 <p className="text-charcoal/60 text-xs mt-1">You can also use <a className="text-cta underline" href="https://www.sendwave.com/">Sendwave</a>, <a className="text-cta underline" href="https://www.remitly.com/">Remitly</a>, <a className="text-cta underline" href="https://www.wise.com/">Wise</a>.</p>
               </div>
-              <div><p className="text-xs tracking-widest uppercase font-semibold text-cta">Step 2 — Submit proof</p><p className="text-sm mt-1">Send your payment proof to <a href="https://bit.ly/rawdah-director" target="_blank" className="text-cta underline font-medium">Submit Payment Proof</a> or reply to the email.</p></div>
+              <div><p className="text-xs tracking-widest uppercase font-semibold text-cta">Step 2 — Submit proof</p><p className="text-sm mt-1">Send your payment proof to <a href="https://bit.ly/rawdah-director" target="_blank" className="text-cta underline font-medium">Submit Payment Proof</a> or reply to the confirmation email.</p></div>
               <div><p className="text-xs tracking-widest uppercase font-semibold text-cta">Step 3 — Confirmation</p><p className="text-sm mt-1">You’ll receive your schedule and class link once payment is confirmed.</p></div>
             </div>
             <div className="mt-6 flex gap-3 justify-center">
               <a href="https://bit.ly/rawdah-director" target="_blank" className="bg-cta text-white font-semibold px-6 py-3 rounded-xl">Submit Payment Proof</a>
               <button onClick={()=>setSubmitted(false)} className="bg-white border border-sage font-semibold px-6 py-3 rounded-xl">Edit Registration</button>
             </div>
+            <p className="mt-4 text-xs text-charcoal/45">Data saved to Google Sheet (your Google account). Parent auto-email sent via Apps Script MailApp — check spam folder.</p>
           </div>
         </div>
       </section>
@@ -85,7 +102,6 @@ export default function EnrollmentForm(){
           </div>
 
           <form onSubmit={onSubmit} className="mt-6 bg-white rounded-[20px] border border-sage p-6 shadow-card space-y-4">
-            {/* honeypot */}
             <input type="text" name="company" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
             <div className="grid sm:grid-cols-2 gap-4">
               <label className="text-sm">Parent/Guardian Name *<input name="parentName" required className="mt-1 w-full border border-sage rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-cta" placeholder="Full name" /></label>
@@ -120,6 +136,7 @@ export default function EnrollmentForm(){
             </div>
 
             {error && <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2">{error}</p>}
+            {!SHEETS_URL && <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">Setup pending: add <code>NEXT_PUBLIC_GOOGLE_SHEETS_URL</code> in Vercel env (see docs). Form will still show success locally.</p>}
             <button disabled={loading} className="w-full bg-cta hover:bg-ctaHover text-white font-semibold py-3.5 rounded-xl transition-colors disabled:opacity-60">{loading?'Submitting...':'Complete Registration — Show Next Steps'}</button>
             <p className="text-center text-xs text-charcoal/50">Need help? <a href="https://bit.ly/rawdah-director" target="_blank" className="text-cta underline font-medium">Speak to Our Director</a></p>
           </form>

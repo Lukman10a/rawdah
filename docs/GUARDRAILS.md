@@ -22,7 +22,7 @@
 ## 4. Scope & Infrastructure
 - Do not add hero image until explicitly approved.
 - Keep apex `rawdahkids.org` untouched; DNS stays at Namecheap; subdomain `juzamma.rawdahkids.org` via `CNAME cname.vercel-dns.com`.
-- `FROM_EMAIL` is `noreply@juzamma.rawdahkids.org` (verified via Resend TXT/SPF/DKIM); fallback `onboarding@resend.dev` until verified. Admin inbox `markazulbayaan9@gmail.com`.
+- Enrollment is inbound via Google Sheets (`NEXT_PUBLIC_GOOGLE_SHEETS_URL` → Apps Script `doPost` → appendRow, `docs/GOOGLE_SHEETS_SETUP.md`); parent auto-message kept via Apps Script `MailApp.sendEmail` + success pane (no Resend). Sheet owned by your Google account email; admin notification optional via second `MailApp.sendEmail` to `markazulbayaan9@gmail.com`.
 - Keep enrollment future-proof: payment card supports Paystack/Stripe/Flutterwave swap without redesign.
 
 ## 5. Process
