@@ -12,8 +12,9 @@ export default function AdditionalCourses() {
             </h2>
           </div>
           <a
-            href="https://wa.link/2fgoky"
+            href="https://rawdahkids.org"
             target="_blank"
+            rel="noopener noreferrer"
             className="text-sm font-semibold text-cta underline underline-offset-4"
           >
             Explore Other Courses →
@@ -52,5 +53,4 @@ export default function AdditionalCourses() {
   );
 }
 
-// deployment id:
-// AKfycbydWnUFX9NPOLS_RMxJdtqs-YWO7NeVotIjH2qZG8EMH6QhJHL8GBGs0srAk56uKyFuhA
+
