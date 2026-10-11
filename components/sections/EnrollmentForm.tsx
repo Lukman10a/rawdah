@@ -210,12 +210,12 @@ export default function EnrollmentForm() {
             <h2 className="mt-3 text-[26px] lg:text-[32px] font-bold tracking-tight text-forest">
               Start Your Child’s Qur’an Journey
             </h2>
-            <p className="mt-2 text-sm text-charcoal/60">
+            {/* <p className="mt-2 text-sm text-charcoal/60">
               4 steps — registration, plan, payment, confirmation.
-            </p>
+            </p> */}
           </div>
 
-          <div className="mt-6 grid grid-cols-4 gap-2 text-center text-xs">
+          {/* <div className="mt-6 grid grid-cols-4 gap-2 text-center text-xs">
             {["Registration", "Payment Plan", "Payment", "Confirmation"].map(
               (s, i) => (
                 <div
@@ -226,7 +226,7 @@ export default function EnrollmentForm() {
                 </div>
               ),
             )}
-          </div>
+          </div> */}
 
           <form
             onSubmit={onSubmit}
